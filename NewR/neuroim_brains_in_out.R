@@ -17,15 +17,17 @@ volsToMatrix<-function(dataVols, maskVol){
   }else{
     mask.in<-loadVolume(maskVol)
   }
-
+  
   vols.in<-loadVector(fileName = dataVols,mask=mask.in)
   dataMatrix<-vols.in@data
-  bspace<-BrainSpace(Dim=c(vols.in@space@Dim[1:3],1),spacing=vols.in@space@spacing, origin=vols.in@space@origin,axes=vols.in@space@axes,trans=vols.in@space@trans)
+  #bspace<-BrainSpace(Dim=c(vols.in@space@Dim[1:3],1),spacing=vols.in@space@spacing, origin=vols.in@space@origin,axes=vols.in@space@axes,trans=vols.in@space@trans)
+  bspace<-space(vols.in)
+  
   return(list(bspace=bspace,mask=mask.in,dataMatrix=dataMatrix))
 }
 
 ## get the brain matrix
-data.out<-volsToMatrix(dataVols,maskvol)
+data.out<-volsToMatrix(dataVols=dataVols,maskVol=maskVol)
 
 ## do some analysis
 pca.res<-epPCA(DATA=data.out$dataMatrix,scale=T, center=T,graphs = F)
@@ -35,6 +37,10 @@ data.fn<-'myBrain.nii'
 
 ## write out the results
 matrixToVolume<-function(dataMatrix,dataFileName='myBrain.nii',bspace,mask){
+  #change time series brain space to 1 volume brain space
+  if(length(bspace@Dim)>3){
+    bspace@Dim<-bspace@Dim[1:3]
+  }
   vol.out<-SparseBrainVector(dataMatrix,space=bspace,mask=mask)
   writeVector(vol.out,data.fn)
 }
