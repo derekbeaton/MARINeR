@@ -14,6 +14,8 @@ mask.in<-loadVolume(paste(mask.dir,mask.fn,sep='/'))
 #run.in<-loadVector(paste(data.dir,data.fn,sep='/')) 
 ##for a time x voxel matrix
 run.in.masked<-loadVector(paste(data.dir,data.fn,sep='/'),mask=mask.in)
+
+### create the brain space data needed to write out the nii (just grab info from the data read in)
 bspace.dat<-run.in.masked
 bspace<-BrainSpace(Dim=bspace.dat@space@Dim,spacing=bspace.dat@space@spacing, origin=bspace.dat@space@origin,axes=bspace.dat@space@axes,trans=bspace.dat@space@trans)
 
