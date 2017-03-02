@@ -2,7 +2,7 @@
 ### FOR NOW: STOP if complex SVs/Eigens are encountered.
 
 #  "Tolerance" SVD: A SVD function that automatically eliminates (likely) spurious components/sources of variance
-#    These eliminated components are those that fall below a specified tolerance, currently defaulted to .Machine$double.eps*100
+#    These eliminated components are those that fall below a specified tolerance, currently defaulted to .Machine$double.eps
 #'
 #'  @export
 #'
@@ -15,7 +15,7 @@
 #'  @param x A data matrix for input to the singular value decomposition (\code{svd})
 #'  @param nu the number of left singular vectors to be computed. Default is \code{min(dim(x))}
 #'  @param nv the number of right singular vectors to be computed. Default is \code{min(dim(x))}
-#'  @param tol A tolerance level for eliminating (tiny variance or negative or imaginary) components. Default is .Machine$double.eps*100
+#'  @param tol A tolerance level for eliminating (tiny variance or negative or imaginary) components. Default is .Machine$double.eps
 #'
 #'  @return
 #'  A list with three elements (like \code{svd}):
@@ -35,7 +35,7 @@
 #'  @author Derek Beaton
 #'  @keywords multivariate, diagonalization, eigen
 
-tolerance.svd <- function(x, nu=min(dim(x)), nv=min(dim(x)), tol=.Machine$double.eps*100) {	## consider increasing the tolerance.
+tolerance.svd <- function(x, nu=min(dim(x)), nv=min(dim(x)), tol=.Machine$double.eps) {	## consider increasing the tolerance.
 
     ##nu and nv are pass through values.
   svd.res <- svd(x, nu = nu, nv = nv)
@@ -50,8 +50,8 @@ tolerance.svd <- function(x, nu=min(dim(x)), nv=min(dim(x)), tol=.Machine$double
   rownames(svd.res$v) <- colnames(x)
   svd.res$d <- svd.res$d[comps.to.keep]
 
-  svd.res$u[ abs(svd.res$u) < tol ] <- 0
-  svd.res$v[ abs(svd.res$v) < tol ] <- 0
+  #svd.res$u[ abs(svd.res$u) < tol ] <- 0
+  #svd.res$v[ abs(svd.res$v) < tol ] <- 0
 
   return(svd.res)
 

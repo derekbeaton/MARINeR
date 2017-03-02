@@ -11,6 +11,7 @@
 
 
   ### is it really this simple?
+  ### no, not it's not.
 power.invert.rebuild_matrix <- function(x, power = 1, invert = F, k=0, ...){
   ### by default, this gives you back your matrix.
   ### SO DON'T BE A DUMMY.
