@@ -11,7 +11,7 @@
 
 
   ### is it really this simple?
-power.invert_matrix <- function(x, power = 1, invert = F, ...){
+power.invert.rebuild_matrix <- function(x, power = 1, invert = F, k=0, ...){
   ### by default, this gives you back your matrix.
   ### SO DON'T BE A DUMMY.
 
@@ -21,13 +21,18 @@ power.invert_matrix <- function(x, power = 1, invert = F, ...){
   if (!is.matrix(x))
     x <- as.matrix(x)
 
+  if(k<=0){
+    k <- min(nrow(x),ncol(x))
+  }
   res <- tolerance.svd(x,...)  ## just go with the defaults of this or allow pass through?
                                   ## maybe pass through via '...' -- which would be my first time using that!
 
+  comp.ret <- min(length(res$d),k)
+
   if(invert){
-    return( (res$v * matrix(1/(res$d^power),nrow(res$v),ncol(res$v),byrow=T)) %*% t(res$u) )
+    return( (res$v[,comp.ret] * matrix(1/(res$d[comp.ret]^power),nrow(res$v[,comp.ret]),ncol(res$v[,comp.ret]),byrow=T)) %*% t(res$u[,comp.ret]) )
   }else{
-    return( (res$u * matrix(res$d^power,nrow(res$u),ncol(res$u),byrow=T)) %*% t(res$v) )
+    return( (res$u[,comp.ret] * matrix(res$d[comp.ret]^power,nrow(res$u[,comp.ret]),ncol(res$u[,comp.ret]),byrow=T)) %*% t(res$v[,comp.ret]) )
   }
 
 }
