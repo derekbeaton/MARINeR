@@ -3,39 +3,40 @@
 library(neuroim)
 library(ExPosition)
 
-data.dir<-'C:/Users/Jenny/Documents/projects/brainhack/degrafaces/nii/3780/MotCor/'
-data.fn<-'WmCsfV3780cond1+censor.nii'
-mask.dir<-'C:/Users/Jenny/Documents/projects/brainhack/degrafaces/masks/'
-mask.fn<-'aal_numb_4mm_dgScrub.nii'
+dataVols<-'C:/Users/Jenny/Documents/projects/brainhack/degrafaces/nii/3780/MotCor/WmCsfV3780cond1+censor.nii'
+maskVol<-'C:/Users/Jenny/Documents/projects/brainhack/degrafaces/masks/aal_numb_4mm_dgScrub.nii'
+
 design<-read.csv('C:/Users/Jenny/Documents/projects/brainhack/degrafaces/design/rowDESIGN_run_face_vs_fix_TR144.csv')
 
-mask.in<-loadVolume(paste(mask.dir,mask.fn,sep='/'))
+volsToMatrix<-function(dataVols, maskVol){
+  if(length(maskVol)==0){
+    print('Please provide a mask for the data')
+  }
+  if(length(maskVol)>1){
+    print('Mutli masking not supported yet :(')
+  }else{
+    mask.in<-loadVolume(maskVol)
+  }
 
-##for a 4D time series
-#run.in<-loadVector(paste(data.dir,data.fn,sep='/')) 
-##for a time x voxel matrix
-run.in.masked<-loadVector(paste(data.dir,data.fn,sep='/'),mask=mask.in)
+  vols.in<-loadVector(fileName = dataVols,mask=mask.in)
+  dataMatrix<-vols.in@data
+  bspace<-BrainSpace(Dim=c(vols.in@space@Dim[1:3],1),spacing=vols.in@space@spacing, origin=vols.in@space@origin,axes=vols.in@space@axes,trans=vols.in@space@trans)
+  return(list(bspace=bspace,mask=mask.in,dataMatrix=dataMatrix))
+}
 
-### do shit to the time series x voxel matrix
-### here I'm just doing a stupid mean centering
-#data.proc<-run.in.masked@data - mean(run.in.masked@data)
+## get the brain matrix
+data.out<-volsToMatrix(dataVols,maskvol)
 
-### actualy we don't want to output a time series, we want to output a single volume
-## we will do a pca with Expo
-pca.res<-epPCA(DATA=run.in.masked@data,scale=T, center=T,DESIGN = design,make_design_nominal = F,graphs = F)
-#rownames(pca.res$ExPosition.Data$fi)<-c(1:144)
-#windows()
-#prettyPlot(pca.res$ExPosition.Data$fi,col = pca.res$Plotting.Data$fi.col,display_names=T)
+## do some analysis
+pca.res<-epPCA(DATA=data.out$dataMatrix,scale=T, center=T,graphs = F)
 lv<-1
-res.out<-as.matrix(pca.res$ExPosition.Data$fj[,lv])
+resMatrix<-as.matrix(pca.res$ExPosition.Data$fj[,lv])
+data.fn<-'myBrain.nii'
 
-### create the brain space data needed to write out the nii (just grab info from the data read in)
-bspace.dat<-run.in.masked
-bspace<-BrainSpace(Dim=c(bspace.dat@space@Dim[1:3],1),spacing=bspace.dat@space@spacing, origin=bspace.dat@space@origin,axes=bspace.dat@space@axes,trans=bspace.dat@space@trans)
+## write out the results
+matrixToVolume<-function(dataMatrix,dataFileName='myBrain.nii',bspace,mask){
+  vol.out<-SparseBrainVector(dataMatrix,space=bspace,mask=mask)
+  writeVector(vol.out,data.fn)
+}
 
-## Write out the processed data matrix
-vol.out<-SparseBrainVector(res.out,space=bspace,mask=mask.in)
-
-out.fn<-'cond1_fj_lv1.nii'
-writeVector(vol.out,out.fn)
-
+matrixToVolume(dataMatrix = resMatrix, dataFileName = data.fn,bspace = data.out$bspace, mask=data.out$mask)
