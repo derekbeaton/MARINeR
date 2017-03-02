@@ -1,3 +1,6 @@
+### NOTE TO SELF: Should I eliminate complex eigenvalues (and vectors)?
+### FOR NOW: STOP if complex SVs/Eigens are encountered.
+
 #  "Tolerance" SVD: A SVD function that automatically eliminates (likely) spurious components/sources of variance
 #    These eliminated components are those that fall below a specified tolerance, currently defaulted to .Machine$double.eps*100
 #'
@@ -36,6 +39,9 @@ tolerance.svd <- function(x, nu=min(dim(x)), nv=min(dim(x)), tol=.Machine$double
 
     ##nu and nv are pass through values.
   svd.res <- svd(x, nu = nu, nv = nv)
+  if(any(unlist(lapply(svd.res$d,is.complex)))){
+    stop("tolerance.svd: Singular values ($d) are complex.")
+  }
   comps.to.keep <- which(!(svd.res$d^2 < tol))
 
   svd.res$u <- as.matrix(svd.res$u[,comps.to.keep])
