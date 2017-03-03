@@ -1,4 +1,5 @@
 
+
 ## RECTANGULAR MATRICES.
 # THIS IS SQRT
 # res <- my.svd(X,tol=tol)

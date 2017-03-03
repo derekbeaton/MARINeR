@@ -5,7 +5,7 @@
 \title{@export}
 \usage{
 tolerance.svd(x, nu = min(dim(x)), nv = min(dim(x)),
-  tol = .Machine$double.eps * 100)
+  tol = .Machine$double.eps)
 }
 \description{
 @title \code{tolerance.svd}: automatically truncate spurious (tiny variance or negative or imaginary) components.
@@ -15,10 +15,10 @@ tolerance.svd(x, nu = min(dim(x)), nv = min(dim(x)),
    The (likely) spurious singular values and vectors are then eliminated from \code{$u}, \code{$d}, and \code{$v}.
    Additionally, all values in \code{abs($u)} or \code{abs($v)} that fall below the \code{tol} are set to 0.
 
-@param x A data matrix for input to the singular value decomposition (\code{svd})
+@param x A data matrix for input to the singular value decomposition (\code{\link{svd}})
  @param nu the number of left singular vectors to be computed. Default is \code{min(dim(x))}
  @param nv the number of right singular vectors to be computed. Default is \code{min(dim(x))}
- @param tol A tolerance level for eliminating (tiny variance or negative or imaginary) components. Default is .Machine$double.eps*100
+ @param tol A tolerance level for eliminating (tiny variance or negative or imaginary) components. Default is .Machine$double.eps
 
 @return
  A list with three elements (like \code{svd}):
