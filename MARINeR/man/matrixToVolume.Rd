@@ -24,3 +24,7 @@ matrixToVolume(dataMatrix, mask, dataFileName = "myBrain.nii")
  
  @author Jenny Rieck
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

@@ -38,3 +38,4 @@ tolerance.svd(x, nu = min(dim(x)), nv = min(dim(x)),
 @author Derek Beaton
  @keywords multivariate, diagonalization, eigen
 }
+

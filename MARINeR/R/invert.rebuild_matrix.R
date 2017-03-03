@@ -1,20 +1,36 @@
+#'
+#'  @export
+#'
+#'  @title \code{invert.rebuild_matrix}: psuedo inverse and rebuild of a matrix
+#'
+#'  @description \code{invert.rebuild_matrix} takes in a matrix and will compute the psuedo-inverse via the singular value decomposition.
+#'  Additionally, the psuedo-inverse can be computed for a lower rank estimate of the matrix.
+#'
+#'  @param x data matrix to compute the pseudo-inverse of
+#'  @param k the number of components to retain in order to build a lower rank estimate of \code{x}
+#'  @param ... parameters to pass through to \code{\link{tolerance.svd}}
+#'
+#'  @return
+#'  The (possibly lower rank) psuedo-inverse of \code{x}
+#'
+#'  @seealso \code{\link{tolerance.svd}} and \code{\link{power.rebuild_matrix}}
+#'
+#'  @examples
+#'  hilbert <- function(n) { i <- 1:n; 1 / outer(i - 1, i, "+") }
+#'  X <- hilbert(9)[, 1:6]
+#'  X.inv <- invert.rebuild_matrix(X)
+#'  X.inv %*% X ## is approximately an identity.
+#'
+#'  @author Derek Beaton
+#'
+#'  @keywords multivariate, diagonalization, eigen, pseudo-inverse, Moore-Penrose
+#'
 
-## RECTANGULAR MATRICES.
-# THIS IS SQRT
-# res <- my.svd(X,tol=tol)
-# return( (res$u * matrix(sqrt(res$d),nrow(res$u),ncol(res$u),byrow=T)) %*% t(res$v) )
-
-# THIS IS INVERSION VIA SVD.
-# res <- my.svd(X,tol=tol)
-# return( (res$v * matrix(1/res$d,nrow(res$v),ncol(res$v),byrow=T)) %*% t(res$u) )
-
-
-
-### is it really this simple?
-### no, not it's not.
 invert.rebuild_matrix <- function(x, k=0, ...){
-  ### by default, this gives you back your matrix.
-  ### SO DON'T BE A DUMMY.
+  ## actually, these should test if they are a vector and just return them as is.
+  ## also test if diagonal, and if so, only return a vector.
+  ## but maybe that's for later...
+
 
   ##stolen from MASS::ginv()
   if (length(dim(x)) > 2L || !(is.numeric(x) || is.complex(x)))
