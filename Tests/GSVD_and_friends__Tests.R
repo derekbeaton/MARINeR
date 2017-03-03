@@ -4,12 +4,13 @@ gc()
 
 library(ExPosition)
 
-source('../NewR/GSVD_Functions.R')
+#source('../NewR/GSVD_Functions.R')
 source('../MARINeR/R/power.rebuild_matrix.R')
 source('../MARINeR/R/invert.rebuild_matrix.R')
 #source('../MARINeR/R/invert.sqrt.rebuild_matrix.R')
 source('../MARINeR/R/tolerance.svd.R')
-#source('../MARINeR/R/gsvd.R')
+source('../MARINeR/R/gsvd.R')
+source('../MARINeR/R/isDiagonal.matrix.R')
 
 ## I need to test the new versions of functions against the GSVD_Functions functions
 ## I also need to make sure I can easily get the results from CA (which means my GSVD is working completely).
@@ -71,9 +72,15 @@ colW <- colSums(Observed)
 Expected <- rowW %o% colW
 Deviations <- Observed - Expected
 ca.res <- gsvd(Deviations,diag(1/rowW),diag(1/colW))
+ca.res2 <- gsvd(Deviations,1/rowW,1/colW)
 fi <- diag(1/rowW) %*% ca.res$p %*% diag(ca.res$d)
 fj <- diag(1/colW) %*% ca.res$q %*% diag(ca.res$d)
 
 
 
 ep.res <- epCA(authors$ca$data,graphs=F)
+
+ep.res$ExPosition.Data$fi / fi
+ep.res$ExPosition.Data$fj / fj
+ep.res$ExPosition.Data$pdq$Dv / ca.res$d
+

@@ -55,30 +55,82 @@
 #'  @keywords multivariate, diagonalization, eigen
 
 
-gsvd <- function(DAT, LW, RW, nu= min(dim(DAT)), nv = min(dim(DAT)), k = 0, tol=.Machine$double.eps){
+gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k = 0, tol=.Machine$double.eps){
 
     ## probably need some rudimentary checks here.
     DAT <- as.matrix(DAT)
-    LW <- as.matrix(LW)
-    RW <- as.matrix(RW)
+    #LW <- as.matrix(LW)
+    #RW <- as.matrix(RW)
+
+    RW.is.vector <- LW.is.vector <- RW.is.nan <- LW.is.nan <- F
+
+    if( is.nan(LW) ){
+      LW.is.nan <- T
+    }
+    if( is.nan(RW) ){
+      RW.is.nan <- T
+    }
+
+    if ( is.null(dim(LW)) & (length(LW) > 0) ) {
+      LW.is.vector <- T
+    }
+    if ( is.null(dim(RW)) & (length(RW) > 0) ) {
+      RW.is.vector <- T
+    }
+    if(!LW.is.vector){
+      if( isDiagonal.matrix(LW) ){
+        LW <- diag(LW)
+        LW.is.vector <- T
+      }
+    }
+    if(!RW.is.vector){
+      if( isDiagonal.matrix(RW) ){
+        RW <- diag(RW)
+        RW.is.vector <- T
+      }
+    }
+
+
+    ## actually, I need to test if LW or RW are diagonals or vectors.
+      ## then I need to compute whatever I need to compute.
+
+
+    if( LW.is.vector ){
+      DAT <- matrix(sqrt(LW),nrow=nrow(DAT),ncol=ncol(DAT),byrow=F) * DAT
+    }else if(!LW.is.nan){
+      DAT <- power.rebuild_matrix(LW, power = 1/2) %*% DAT
+    }
+    if( RW.is.vector ){
+      DAT <- DAT * matrix(sqrt(RW),nrow=nrow(DAT),ncol=ncol(DAT),byrow=T)
+    }else if(!RW.is.nan){
+      DAT <- DAT %*% power.rebuild_matrix(RW, power = 1/2)
+    }
 
     ## I also need to skip over this computation if LW or RW are either empty or all 1s
-  dat.for.svd <- power.rebuild_matrix(LW, power = 1/2) %*% DAT %*% power.rebuild_matrix(RW, power = 1/2)
+  #dat.for.svd <- power.rebuild_matrix(LW, power = 1/2) %*% DAT %*% power.rebuild_matrix(RW, power = 1/2)
 
   if(k<=0){
     k <- min(nrow(DAT),ncol(DAT))
   }
-  res <- tolerance.svd(dat.for.svd,nu=nu,nv=nv,tol=tol)
+  res <- tolerance.svd(DAT,nu=nu,nv=nv,tol=tol)
   d <- res$d
   tau <- d^2/sum(d^2)
   comp.ret <- min(length(d),k)
 
-  res$u <- res$u[,1:comp.ret]
-  res$v <- res$v[,1:comp.ret]
+  p <- res$u <- res$u[,1:comp.ret]
+  q <- res$v <- res$v[,1:comp.ret]
 
     ## I also need to skip over this computation if LW or RW are either empty or all 1s
-  p <- power.rebuild_matrix(LW, power = -1/2) %*% res$u
-  q <- power.rebuild_matrix(RW, power = -1/2) %*% res$v
+  if(LW.is.vector){
+    p <- matrix(1/sqrt(LW),nrow=nrow(res$u),ncol=ncol(res$u),byrow=F) * res$u
+  }else if(!LW.is.nan){
+    p <- power.rebuild_matrix(LW, power = -1/2) %*% res$u
+  }
+  if(RW.is.vector){
+    q <- matrix(1/sqrt(RW),nrow=nrow(res$v),ncol=ncol(res$v),byrow=F) * res$v
+  }else if(!RW.is.nan){
+    q <- power.rebuild_matrix(RW, power = -1/2) %*% res$v
+  }
 
   rownames(res$u) <- rownames(p) <- rownames(DAT)
   rownames(res$v) <- rownames(q) <- colnames(DAT)
