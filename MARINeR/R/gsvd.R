@@ -66,30 +66,30 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
 
     if( is.nan(LW) ){
       LW.is.nan <- T
+    }else{
+      if ( is.null(dim(LW)) & (length(LW) > 0) ) {
+        LW.is.vector <- T
+      }
+      if(!LW.is.vector){
+        if( isDiagonal.matrix(LW) ){
+          LW <- diag(LW)
+          LW.is.vector <- T
+        }
+      }
     }
     if( is.nan(RW) ){
       RW.is.nan <- T
-    }
-
-    if ( is.null(dim(LW)) & (length(LW) > 0) ) {
-      LW.is.vector <- T
-    }
-    if ( is.null(dim(RW)) & (length(RW) > 0) ) {
-      RW.is.vector <- T
-    }
-    if(!LW.is.vector){
-      if( isDiagonal.matrix(LW) ){
-        LW <- diag(LW)
-        LW.is.vector <- T
-      }
-    }
-    if(!RW.is.vector){
-      if( isDiagonal.matrix(RW) ){
-        RW <- diag(RW)
+    }else{
+      if ( is.null(dim(RW)) & (length(RW) > 0) ) {
         RW.is.vector <- T
       }
+      if(!RW.is.vector){
+        if( isDiagonal.matrix(RW) ){
+          RW <- diag(RW)
+          RW.is.vector <- T
+        }
+      }
     }
-
 
     ## actually, I need to test if LW or RW are diagonals or vectors.
       ## then I need to compute whatever I need to compute.
