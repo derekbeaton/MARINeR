@@ -50,8 +50,8 @@ tolerance.svd <- function(x, nu=min(dim(x)), nv=min(dim(x)), tol=.Machine$double
   rownames(svd.res$v) <- colnames(x)
   svd.res$d <- svd.res$d[comps.to.keep]
 
-  #svd.res$u[ abs(svd.res$u) < tol ] <- 0
-  #svd.res$v[ abs(svd.res$v) < tol ] <- 0
+  svd.res$u[ abs(svd.res$u) < tol ] <- 0
+  svd.res$v[ abs(svd.res$v) < tol ] <- 0
 
   return(svd.res)
 

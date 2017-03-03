@@ -1,17 +1,9 @@
 
-
-## RECTANGULAR MATRICES.
-# THIS IS SQRT
-# res <- my.svd(X,tol=tol)
-# return( (res$u * matrix(sqrt(res$d),nrow(res$u),ncol(res$u),byrow=T)) %*% t(res$v) )
-
-# THIS IS INVERSION VIA SVD.
-# res <- my.svd(X,tol=tol)
-# return( (res$v * matrix(1/res$d,nrow(res$v),ncol(res$v),byrow=T)) %*% t(res$u) )
-
 power.rebuild_matrix <- function(x, power = 1, k=0, ...){
-  ### by default, this gives you back your matrix.
-  ### SO DON'T BE A DUMMY.
+
+  ## actually, these should test if they are a vector and just return them as is.
+  ## also test if diagonal, and if so, only return a vector.
+    ## but maybe that's for later...
 
   ##stolen from MASS::ginv()
   if (length(dim(x)) > 2L || !(is.numeric(x) || is.complex(x)))
