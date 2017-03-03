@@ -13,9 +13,10 @@
 #'  @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively. For more than 2 masks, provide filenames in a list and the masks will be sumed
 #'  
 #'  @return 
-#'  A list with 2 elements
+#'  A list with 3 elements
 #'  \item{dataMatrix} a matrix
 #'  \item{mask} a \code{\link{DenseBrainVolume}} of the input mask. Contains \code{\link{BrainSpace}} information for \code{$dataMatrix}
+#'  \item{maskDesign} a matrix specifying which column belongs to which input run
 #'  
 #'  @seealso \code{\link{loadVolume}}, \code{\link{loadVector}}, \code{\link{DenseBrainVolume}}
 #'  
@@ -42,15 +43,15 @@ volsToMatrix<-function(dataVols, maskVol){
   }
   
   if(length(dataVols)>1){
-    print('Multiple runs detected - they will be concatinated')
-    dataMatrix<-c()
-    for(r in 1:length(dataVols)){
-      vols.in<-loadVector(fileName = dataVols[r],mask=mask.in)
-      dataMatrix<-rbind(dataMatrix,vols.in@data)
-    }
-  }else{
-    vols.in<-loadVector(fileName = dataVols,mask=mask.in)
-    dataMatrix<-vols.in@data
+    print('Multiple runs detected - they will be concatenated')
   }
-  return(list(mask=mask.in,dataMatrix=dataMatrix))
+  dataMatrix<-c()
+  runDesign<-c()
+  for(r in 1:length(dataVols)){
+    vols.in<-loadVector(fileName = dataVols[r],mask=mask.in)
+    nvols<-vols.in@space@Dim[4]
+    dataMatrix<-rbind(dataMatrix,vols.in@data)
+    runDesign<-rbind(runDesign,matrix(r,nvols,1))
+  } 
+  return(list(mask=mask.in,dataMatrix=dataMatrix,runDesign=runDesign))
 }
