@@ -9,8 +9,8 @@
 #'  by voxels matrix \code{$dataMatrix} using an inclusion brain mask \code{maskVol}. Utilizes functions in 
 #'  the package neuroim
 #'
-#'  @param dataVols A 4D nifti file of brain volumes across time 
-#'  @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively
+#'  @param dataVols A 4D nifti file of brain volumes across time. If multiple 4D nii files are input, they will be concatenated along the rows
+#'  @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively. For more than 2 masks, provide filenames in a list and the masks will be sumed
 #'  
 #'  @return 
 #'  A list with 2 elements
@@ -32,13 +32,25 @@ volsToMatrix<-function(dataVols, maskVol){
     print('Please provide a mask for the data')
   }
   if(length(maskVol)>1){
-    print('Mutli masking not supported yet :(')
+    print('Multiple masks detected - they will be combined')
+    masks.in<-loadVolumeList(maskVol)
+    mspace<-space(masks.in)
+    mspace@Dim<-mspace@Dim[1:3]
+    mask.in<-DenseBrainVolume(apply(masks.in,c(1,2,3),sum),space=mspace)
   }else{
     mask.in<-loadVolume(maskVol)
   }
   
-  vols.in<-loadVector(fileName = dataVols,mask=mask.in)
-  dataMatrix<-vols.in@data
-
-  return(list(dataMatrix=dataMatrix,mask=mask.in))
+  if(length(dataVols)>1){
+    print('Multiple runs detected - they will be concatinated')
+    dataMatrix<-c()
+    for(r in 1:length(dataVols)){
+      vols.in<-loadVector(fileName = dataVols[r],mask=mask.in)
+      dataMatrix<-rbind(dataMatrix,vols.in@data)
+    }
+  }else{
+    vols.in<-loadVector(fileName = dataVols,mask=mask.in)
+    dataMatrix<-vols.in@data
+  }
+  return(list(mask=mask.in,dataMatrix=dataMatrix))
 }

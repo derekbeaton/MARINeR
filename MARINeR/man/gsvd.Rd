@@ -57,4 +57,3 @@ Observed <- authors/sum(authors)
 @author Derek Beaton
  @keywords multivariate, diagonalization, eigen
 }
-

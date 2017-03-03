@@ -14,8 +14,8 @@ volsToMatrix(dataVols, maskVol)
  by voxels matrix \code{$dataMatrix} using an inclusion brain mask \code{maskVol}. Utilizes functions in 
  the package neuroim
 
-@param dataVols A 4D nifti file of brain volumes across time 
- @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively
+@param dataVols A 4D nifti file of brain volumes across time. If multiple 4D nii files are input, they will be concatenated along the rows
+ @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively. For more than 2 masks, provide filenames in a list and the masks will be sumed
  
  @return 
  A list with 2 elements
