@@ -32,4 +32,3 @@ invert.rebuild_matrix(x, k = 0, ...)
 
 @keywords multivariate, diagonalization, eigen, pseudo-inverse, Moore-Penrose
 }
-

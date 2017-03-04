@@ -17,4 +17,3 @@ isDiagonal.matrix(X)
 @return
  boolean. TRUE if the matrix is diagonal, FALSE if the matrix is not.
 }
-

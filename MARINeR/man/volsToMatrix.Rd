@@ -4,7 +4,7 @@
 \alias{volsToMatrix}
 \title{@export}
 \usage{
-volsToMatrix(dataVols, maskVol)
+volsToMatrix(dataVols, maskVol, dataDesign)
 }
 \description{
 @title \code{volsToMatrix}: transforms a 4D brain volumes to a matrix
@@ -16,12 +16,14 @@ volsToMatrix(dataVols, maskVol)
 
 @param dataVols A 4D nifti file of brain volumes across time. If multiple 4D nii files are input, they will be concatenated along the rows
  @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively. For more than 2 masks, provide filenames in a list and the masks will be sumed
+ @param dataDesign A single column .csv file specifying the corresponding condition for ever TR in the 4D nifti
  
  @return 
  A list with 3 elements
  \item{dataMatrix} a matrix
  \item{mask} a \code{\link{DenseBrainVolume}} of the input mask. Contains \code{\link{BrainSpace}} information for \code{$dataMatrix}
  \item{maskDesign} a matrix specifying which column belongs to which input run
+ \item{dataDesign} a data.frame specifying conditions associated with each row/TR in the final \code{$dataMatrix}
  
  @seealso \code{\link{loadVolume}}, \code{\link{loadVector}}, \code{\link{DenseBrainVolume}}
  
@@ -32,4 +34,3 @@ volsToMatrix(dataVols, maskVol)
  
  @author Jenny Rieck
 }
-
