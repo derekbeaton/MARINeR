@@ -18,9 +18,10 @@ volsToMatrix(dataVols, maskVol)
  @param maskVol A 3D nifti file of a brain volume to be used as mask. All values >0 used inclusively. For more than 2 masks, provide filenames in a list and the masks will be sumed
  
  @return 
- A list with 2 elements
+ A list with 3 elements
  \item{dataMatrix} a matrix
  \item{mask} a \code{\link{DenseBrainVolume}} of the input mask. Contains \code{\link{BrainSpace}} information for \code{$dataMatrix}
+ \item{maskDesign} a matrix specifying which column belongs to which input run
  
  @seealso \code{\link{loadVolume}}, \code{\link{loadVector}}, \code{\link{DenseBrainVolume}}
  

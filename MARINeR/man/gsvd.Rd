@@ -4,8 +4,8 @@
 \alias{gsvd}
 \title{@export}
 \usage{
-gsvd(DAT, LW, RW, nu = min(dim(DAT)), nv = min(dim(DAT)), k = 0,
-  tol = .Machine$double.eps)
+gsvd(DAT, LW = NaN, RW = NaN, nu = min(dim(DAT)), nv = min(dim(DAT)),
+  k = 0, tol = .Machine$double.eps)
 }
 \description{
 @title \code{gsvd}: the generalized singular value decomposition.
@@ -57,3 +57,4 @@ Observed <- authors/sum(authors)
 @author Derek Beaton
  @keywords multivariate, diagonalization, eigen
 }
+
