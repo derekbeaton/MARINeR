@@ -28,7 +28,7 @@
 #'  @author Jenny Rieck
 
 
-volsToMatrix<-function(dataVols, maskVol){
+volsToMatrix<-function(dataVols, maskVol, dataDesign){
   if(length(maskVol)==0){
     print('Please provide a mask for the data')
   }
@@ -47,11 +47,14 @@ volsToMatrix<-function(dataVols, maskVol){
   }
   dataMatrix<-c()
   runDesign<-c()
+  volsDesign<-c()
   for(r in 1:length(dataVols)){
     vols.in<-loadVector(fileName = dataVols[r],mask=mask.in)
     nvols<-vols.in@space@Dim[4]
     dataMatrix<-rbind(dataMatrix,vols.in@data)
     runDesign<-rbind(runDesign,matrix(r,nvols,1))
+    volsDesign<-rbind(volsDesign,read.csv(dataDesign[r],header = F))
   } 
-  return(list(mask=mask.in,dataMatrix=dataMatrix,runDesign=runDesign))
+  return(list(mask=mask.in,dataMatrix=dataMatrix,runDesign=runDesign,dataDesign=volsDesign))
+  
 }
