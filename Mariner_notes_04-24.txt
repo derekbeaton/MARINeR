@@ -1,0 +1,21 @@
+preproc order:
+
+Next step: Standard PCA
+Wrap up preproc nonsense (it will hide in the PCA function)
+
+Get sample data in working order
+
+
+ind.data.preproc(data.list, preproc steps)
+
+   detrend
+   signal to noise
+
+make.data.for.analysis(concat data + participant design)
+ 
+bind in rownorm
+
+drop TRs
+center
+scale
+
