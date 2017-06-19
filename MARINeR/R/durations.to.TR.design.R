@@ -1,15 +1,20 @@
 ### work in progress
 duration.to.TR.design<-function(onsets,durations,condition,TR_length){
   
-  design.in<-read.table(paste0(datadir,'sub-01/func/',data.pref,'sub-01',data.mid,'run-01_events.tsv'),header=T,sep='\t')
+  design.in<-read.csv(paste0(datadir,'mariner_run-01_design.csv'))
   
-  onsets<-design.in$onset
-  durations<-design.in$duration
-  condition<-design.in$trial_type
+  onsets<-design.in$seconds - 1
+  durations<-1
+  condition<-design.in$condition
   TR<-3
   
+  if(length(durations)==1){
+    print('1 input for duration detected -- setting duration to be equal across trials')
+    durations.tot<-rep(durations, length(onsets))
+  }
   
-  
+  trial.timing<-onsets+durations.tot
+  TR.numb<-floor(onsets/TR)
   
   
   
