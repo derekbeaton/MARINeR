@@ -3,12 +3,18 @@
 rm(list=ls())
 gc()
 
-setwd('C:/Users/jrieck/Documents/projects/brainhack/BrainHack_TO_2017/')
-datadir<-'C:/Users/jrieck/Desktop/mariner/data/'
+#setwd('C:/Users/jrieck/Documents/projects/brainhack/BrainHack_TO_2017/')
+setwd('C:/Users/Jenny/Documents/projects/brainhack/BrainHack_TO_2017/')
+
+#datadir<-'C:/Users/jrieck/Desktop/mariner/data/'
+datadir<-'C:/Users/Jenny/Desktop/mariner/data/'
+
 data.pref<-''
 data.mid<-'_task-onebacktask_'
 data.suff<-'_bold_MNI.nii.gz'
-mask<-'C:/Users/jrieck/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
+#mask<-'C:/Users/jrieck/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
+mask<-'C:/Users/Jenny/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
+
 
 #######################################################
 ###### script for getting multiple peeps

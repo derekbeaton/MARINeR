@@ -13,9 +13,8 @@ duration.to.TR.design<-function(onsets,durations,condition,TR_length){
     durations.tot<-rep(durations, length(onsets))
   }
   
-  trial.timing<-onsets+durations.tot
-  TR.numb<-floor(onsets/TR)
-  
+  TR.starts<-cumsum(onsets+durations) %% TR
+  TR.design<-design.in$condition[which(TR.starts==1)]
   
   
 }
