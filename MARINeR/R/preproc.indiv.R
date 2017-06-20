@@ -27,6 +27,7 @@ preproc.indiv<-function(x,lin.detrend=T, quad.detrend=T){
     this.subj<-x[[subjs[s]]]
     
     if(lin.detrend==T){
+      print('Running linear detrend per run per subject')
       ##run.breaks<-which(x$runDesign[-1L] != x$runDesign[-length(x$runDesign)]) ## find when the run index changes
       runs<-unique(this.subj$runDesign)
       dataMatrixLinDetrend<-c()
@@ -41,7 +42,7 @@ preproc.indiv<-function(x,lin.detrend=T, quad.detrend=T){
       this.subj$dataMatrixLinDetrend<-dataMatrixLinDetrend
       
       if(quad.detrend==T){
-        
+        print('Running additional quadtric detrend per run per subject')
         dataMatrixQuadDetrend<-c()
         
         for(r in 1:length(runs)){
