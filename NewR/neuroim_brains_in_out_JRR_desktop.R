@@ -25,6 +25,7 @@ source('./MARINeR/R/subject.data.list.R')
 source('./MARINeR/R/gsvd.R')
 source('./MARINeR/R/tolerance.svd.R')
 source('./MARINeR/R/matrixToVolume.R')
+source('./MARINeR/R/preproc.data.R')
 #source('../NewR/makeNominalData.R')
 library(neuroim)
 library(ExPosition)
@@ -59,7 +60,11 @@ S09 <- list(
 subj.list <- list(S01,S09)
 names(subj.list) <- c("S01","S09")
 
+### create data list structure for each participant
 data.list <- subject.data.list(subj.list)
+
+### do preprocessing for each subject individually (i.e., detrend)
+data.list.preproc<-preproc.indiv(data.list)
 
 
 ### some stuff below will end up in concatenate.data.R
