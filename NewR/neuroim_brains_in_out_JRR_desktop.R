@@ -3,17 +3,17 @@
 rm(list=ls())
 gc()
 
-#setwd('C:/Users/jrieck/Documents/projects/brainhack/BrainHack_TO_2017/')
-setwd('C:/Users/Jenny/Documents/projects/brainhack/BrainHack_TO_2017/')
+setwd('C:/Users/jrieck/Documents/projects/brainhack/BrainHack_TO_2017/')
+#setwd('C:/Users/Jenny/Documents/projects/brainhack/BrainHack_TO_2017/')
 
-#datadir<-'C:/Users/jrieck/Desktop/mariner/data/'
-datadir<-'C:/Users/Jenny/Desktop/mariner/data/'
+datadir<-'C:/Users/jrieck/Desktop/mariner/data/'
+#datadir<-'C:/Users/Jenny/Desktop/mariner/data/'
 
 data.pref<-''
 data.mid<-'_task-onebacktask_'
 data.suff<-'_bold_MNI.nii.gz'
-#mask<-'C:/Users/jrieck/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
-mask<-'C:/Users/Jenny/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
+mask<-'C:/Users/jrieck/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
+#mask<-'C:/Users/Jenny/Desktop/mariner/std_masks/aalnumb_4mm_occ_mtl.nii'
 
 
 #######################################################
@@ -29,24 +29,31 @@ source('./MARINeR/R/matrixToVolume.R')
 library(neuroim)
 library(ExPosition)
 
-run.01.design<-read.csv(paste0(datadir,'mariner_run-01_design.csv'))
-run.02.design<-read.csv(paste0(datadir,'mariner_run-02_design.csv'))
+### Convert trial design data to TR design data and save out csvs
+# run.01.design<-read.csv(paste0(datadir,'mariner_run-01_design.csv'))
+# run.02.design<-read.csv(paste0(datadir,'mariner_run-02_design.csv'))
+# 
+# run.01.TR.design<-durations.to.TR.design(onsets=run.01.design$seconds-1, durations = 1, condition = run.01.design$condition, 
+#                                          TR.length = 3,save.csv=T,csv.fn=paste0(datadir,'mariner_run-01_TR_DESIGN.csv'))
+# run.02.TR.design<-durations.to.TR.design(onsets=run.02.design$seconds-1, durations = 1, condition = run.02.design$condition, 
+#                                          TR.length = 3,save.csv=T,csv.fn=paste0(datadir,'mariner_run-02_TR_DESIGN.csv'))
+# 
 
 ### data should just be any .nii in the given directory.
 S01 <- list(
   data = c(paste0(datadir,'sub-01/func/',data.pref,'sub-01',data.mid,'run-01',data.suff),
            paste0(datadir,'sub-01/func/',data.pref,'sub-01',data.mid,'run-02',data.suff)),
   masks = mask,
-  design = c(run.01.design$condition,
-             run.02.design$condition)
+  design = c(paste0(datadir,'mariner_run-01_TR_DESIGN.csv'),
+             paste0(datadir,'mariner_run-02_TR_DESIGN.csv'))
 )
 
 S09 <- list(
   data = c(paste0(datadir,'sub-09/func/',data.pref,'sub-09',data.mid,'run-01',data.suff),
            paste0(datadir,'sub-09/func/',data.pref,'sub-09',data.mid,'run-02',data.suff)),
   masks = mask,
-  design = c(run.01.design$condition,
-             run.02.design$condition)
+  design = c(paste0(datadir,'mariner_run-01_TR_DESIGN.csv'),
+             paste0(datadir,'mariner_run-02_TR_DESIGN.csv'))
 )
 
 subj.list <- list(S01,S09)
