@@ -1,0 +1,67 @@
+This dataset was obtained from the OpenfMRI project (http://www.openfmri.org).
+Accession #: ds107
+Description: Word and object processing
+
+Please cite the following references if you use these data:
+
+Duncan, K.J., Pattamadilok, C., Knierim, I., Devlin, J.T. (2009). Consistency and variability in functional localisers. Neuroimage, 46(4):1018-26. doi: 10.1016/j.neuroimage.2009.03.014
+
+
+Release history:
+11/04/2011: initial release
+3/21/2013: Updated release with QA information
+
+This dataset is made available under the Public Domain Dedication and License 
+v1.0, whose full text can be found at 
+http://www.opendatacommons.org/licenses/pddl/1.0/. 
+We hope that all users will follow the ODC Attribution/Share-Alike 
+Community Norms (http://www.opendatacommons.org/norms/odc-by-sa/); 
+in particular, while not legally required, we hope that all users 
+of the data will acknowledge the OpenfMRI project and NSF Grant 
+OCI-1131441 (R. Poldrack, PI) in any publications.
+
+### Comments added by Openfmri Curators ###
+===========================================
+
+General Comments
+----------------
+
+
+Defacing
+--------
+Pydeface was used on all anatomical images to ensure deindentification of subjects. The code
+can be found at https://github.com/poldracklab/pydeface
+
+Quality Control
+---------------
+Mriqc was run on the dataset. Results are located in derivatives/mriqc. The code can be found
+at https://github.com/poldracklab/mriqc
+
+Where to discuss the dataset
+----------------------------
+1) www.openfmri.org/dataset/ds******/ See the comments section at the bottom of the dataset
+page.
+2) www.neurostars.org Please tag any discussion topics with the tags openfmri and dsXXXXXX
+accession number.
+3) Send an email to submissions@openfmri.org. Please include the dsXXXXXX accession number in
+your email.
+
+Known Issues
+------------
+For following subjects, some part of brain is stripped during defacing. For several subjects, only a minute part is stripped except few where brain is stripped to larger extent.  
+sub-03 
+sub-06
+sub-07
+sub-08
+sub-16
+sub-21
+sub-22
+sub-41
+sub-44
+sub-45
+sub-46
+
+Bids-validator Output
+---------------------
+
+
