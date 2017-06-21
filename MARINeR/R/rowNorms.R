@@ -8,6 +8,7 @@ rowNorms <- function(X,type=NULL,center=FALSE,scale=FALSE){
 	}else if (type == 'z'){
 	  return(t(apply(X,1,scale,T,T)))
 	}else if(type == 'other'){
+			## this one is expensive.
 		return(t(expo.scale(t(X),center=center,scale=scale)))
 	}else{
 		return(X)

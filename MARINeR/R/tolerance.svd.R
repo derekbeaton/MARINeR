@@ -1,6 +1,9 @@
 ### NOTE TO SELF: Should I eliminate complex eigenvalues (and vectors)?
 ### FOR NOW: STOP if complex SVs/Eigens are encountered.
 
+### ANOTHER NOTE: 
+	## Maybe this function should have k= and return the low rank parts instead of doing that elsewhere.
+
 #  "Tolerance" SVD: A SVD function that automatically eliminates (likely) spurious components/sources of variance
 #    These eliminated components are those that fall below a specified tolerance, currently defaulted to .Machine$double.eps
 #'
