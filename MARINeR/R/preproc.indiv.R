@@ -7,10 +7,12 @@
 #'  @description \code{preproc.indiv} Preprocessing on the individual subject level; includes linear and quadratric detrend, and ?!?!?
 #'
 #'  @param x a list of subject data derived from \code{\link{subject.data.list}}
-#'  @param lin.detrend Flag (default=T) for linear detrend (for each run separately)
-#'  @param quad.detrend Flag (default=T) for quadratic detrend (for each run separately) on top of linear detrend
+#'  @param detrend Flag (default=T) for linear detrend (for each run separately)
+#'  @param detrend.degrees (default=c(1,2)) - degrees of polynomial to detrend; for linear detrend c(1); for linear then quadratic c(1,2)
+#'  @param global.signal.regreesion Flag (default=T) for regressing out mean of matrix
+#'  @param svd.norm Flag (default=T) to svd normalize (divide by first singular value of the entire subject)
 #'  
-#'  @return x a list of subject data with preprocessed data included per subject
+#'  @return x a list of subject data with preprocessed data included per subject under x$subj$dataMatrixPreproc
 
 #'  @seealso
 #'  
