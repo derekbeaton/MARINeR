@@ -76,12 +76,12 @@ data.list<-preproc.indiv(data.list)
 
 ## linear detrend, row normalize, then column center.
 concat.data <- cbind(
-  expo.scale(rowNorms(apply(data.list$sub.09$dataMatrixLinDetrend,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F),
-  expo.scale(rowNorms(apply(data.list$sub.15$dataMatrixLinDetrend,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F)
+  expo.scale(rowNorms(apply(data.list$sub.09$dataMatrixPreproc,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F),
+  expo.scale(rowNorms(apply(data.list$sub.15$dataMatrixPreproc,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F)
   )
 participant.design <- c(
-  rep("sub.09",ncol(data.list$sub.09$dataMatrixLinDetrend)),
-  rep("sub.15",ncol(data.list$sub.15$dataMatrixLinDetrend))
+  rep("sub.09",ncol(data.list$sub.09$dataMatrixPreproc)),
+  rep("sub.15",ncol(data.list$sub.15$dataMatrixPreproc))
 )
 ## drop TRs
 
