@@ -1,9 +1,9 @@
-linear.detred <- function(x){
-						resid( lm( x~seq(x) ) )
+linear.detrend <- function(x){
+						resid( lm( x~seq(dim(x)[1]) ) )
 					  }
 					  
 degree.detrend <- function(x,deg=1){
-						preds <- seq(x)^deg
+						preds <- seq(dim(x)[1])^deg
 						resid( lm( x~ preds ) )
 					  }					  
 global.signal.regression <- function(x){
@@ -33,10 +33,10 @@ svd.low.rank.rebuild <- function(x,k=0,...){
 }
 
 	## this is a highly specialized case, and we may not need it
-gsvd.norm <- functiox(x,Wi,Wj){
+#gsvd.norm <- functiox(x,Wi,Wj){
 	
-}
+#}
 	## this is a highly specialized case, and we may not need it
-gsvd.low.rank.rebuild <- function(x){
+#gsvd.low.rank.rebuild <- function(x){
 	
-}
+#}

@@ -18,45 +18,51 @@
 #'  
 #'  @author Jenny Rieck
 
-preproc.indiv<-function(x,lin.detrend=T, quad.detrend=T){
+preproc.indiv<-function(x,detrend=T, detrend.degrees=c(1,2),global.signal.regression =T, svd.norm=T){
   
   subjs<-names(x)
+  
+  ### based on functions in ./TempCode/PreProc_Funcs.R
   
   for(s in 1:length(subjs)){
     
     this.subj<-x[[subjs[s]]]
+    dataMatrixPreproc<-this.subj$dataMatrix
     
-    if(lin.detrend==T){
-      print('Running linear detrend per run per subject')
-      ##run.breaks<-which(x$runDesign[-1L] != x$runDesign[-length(x$runDesign)]) ## find when the run index changes
+    if(detrend==T){
+      print('Running detrend per run per subject')
+     
       runs<-unique(this.subj$runDesign)
-      dataMatrixLinDetrend<-c()
+      dataMatrixDetrend<-c()
       
       for(r in 1:length(runs)){
-        this.run<-this.subj$dataMatrix[which(this.subj$runDesign==runs[r]),]
         
-        time<-seq(1:dim(this.run)[1])
-        this.run.detrend<-residuals(lm(this.run~time))
-        dataMatrixLinDetrend<-rbind(dataMatrixLinDetrend,this.run.detrend)
-      }
-      this.subj$dataMatrixLinDetrend<-dataMatrixLinDetrend
-      
-      if(quad.detrend==T){
-        print('Running additional quadtric detrend per run per subject')
-        dataMatrixQuadDetrend<-c()
-        
-        for(r in 1:length(runs)){
-          this.run<-this.subj$dataMatrixLinDetrend[which(this.subj$runDesign==runs[r]),]
-          
-          time<-seq(1:dim(this.run)[1])^2
-          this.run.detrend<-residuals(lm(this.run~time))
-          dataMatrixQuadDetrend<-rbind(dataMatrixQuadDetrend,this.run.detrend)
+        for(d in 1:length(detrend.degrees)){
+          this.run<-dataMatrixPreproc[which(this.subj$runDesign==runs[r]),]
+          this.run.detrend<-degree.detrend(this.run,deg=detrend.degrees[d])
+          this.run<-this.run.detrend
         }
-        this.subj$dataMatrixQuadDetrend<-dataMatrixQuadDetrend
-      }   
+        dataMatrixDetrend<-rbind(dataMatrixDetrend,this.run)
+      }
+      dataMatrixPreproc<-dataMatrixDetrend
     }
-    x[[subjs[s]]]$dataMatrixLinDetrend<-this.subj$dataMatrixLinDetrend
-    x[[subjs[s]]]$dataMatrixQuadDetrend<-this.subj$dataMatrixQuadDetrend
+    
+    if(global.signal.regression==T){
+      print('Running global signal regression per subject')
+      
+   #   dataMatrixGSR<-global.signal.regression(dataMatrixPreproc)
+      
+    }
+    
+    if(svd.norm==T){
+      print('Running svd norm per subject')
+      
+      #   dataMatrixSVDn<-svd.norm(dataMatrixPreproc)
+      
+    }
+    
+    x[[subjs[s]]]$dataMatrixPreproc<-dataMatrixPreproc
+    x[[subjs[s]]]$dataMatrixPreproc<-dataMatrixPreproc
   }
   return(x)
 }
