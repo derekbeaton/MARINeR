@@ -7,7 +7,7 @@ degree.detrend <- function(x,deg=1){
 						resid( lm( x~ preds ) )
 					  }					  
 global.signal.regression <- function(x){
-						resid( lm( x~mean(x) ) )
+						resid( lm( x~rep(mean(x),dim(x)[1]) ) )
 					  }	
 svd.norm <- function(x,...){
 

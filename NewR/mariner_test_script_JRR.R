@@ -34,14 +34,6 @@ library(ExPosition)
 
 #######################################################
 #### Convert trial design data to TR design data and save out csvs
-## run.01.design<-read.csv(paste0(design.dir,'ds107_run-01_design.csv'))
-## run.02.design<-read.csv(paste0(design.dir,'ds107_run-02_design.csv'))
-# 
-## run.01.TR.design<-durations.to.TR.design(onsets=run.01.design$seconds-1, durations = 1, condition = run.01.design$condition, 
-#                                          TR.length = 3,save.csv=T,csv.fn=paste0(design.dir,'ds107_run-01_TR_DESIGN.csv'))
-## run.02.TR.design<-durations.to.TR.design(onsets=run.02.design$seconds-1, durations = 1, condition = run.02.design$condition, 
-#                                          TR.length = 3,save.csv=T,csv.fn=paste0(design.dir,'ds107_run-02_TR_DESIGN.csv'))
-# 
 
 ### data should just be any .nii in the given directory.
 sub.09 <- list(
@@ -87,6 +79,7 @@ participant.design <- c(
 
 #dim(concat.data)
 
+## input data with nuisance volumes already dropped - should happen much much earlier
 concat.data_dropped <- concat.data[-c(which(data.list$sub.09$dataDesign=="drop" | data.list$sub.09$dataDesign=="FIXATION")),]
 
 

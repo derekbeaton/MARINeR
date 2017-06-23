@@ -20,7 +20,7 @@
 #'  
 #'  @author Jenny Rieck
 
-preproc.indiv<-function(x,detrend=T, detrend.degrees=c(1,2),global.signal.regression =T, svd.norm=T){
+preproc.indiv<-function(x,gsr =T, detrend=T, detrend.degrees=c(1,2),svdn=T, svdlowrank=T){
   
   subjs<-names(x)
   
@@ -31,16 +31,30 @@ preproc.indiv<-function(x,detrend=T, detrend.degrees=c(1,2),global.signal.regres
     this.subj<-x[[subjs[s]]]
     dataMatrixPreproc<-this.subj$dataMatrix
     
+    ### run based preprocessing
+    runs<-unique(this.subj$runDesign)
+    
+    if(gsr==T){
+      dataMatrixGSR<-c()
+      
+      for(r in 1:length(runs)){
+        print(paste('Running global signal regression: run', r, 'for', subjs[s]))
+        this.run<-dataMatrixPreproc[which(this.subj$runDesign==runs[r]),]
+        this.run.gsr<-global.signal.regression(this.run)
+        dataMatrixGSR<-rbind(dataMatrixGSR, this.run.gsr)
+      }
+      dataMatrixPreproc<-dataMatrixGSR
+      
+    }
+    
     if(detrend==T){
-      print('Running detrend per run per subject')
-     
-      runs<-unique(this.subj$runDesign)
       dataMatrixDetrend<-c()
       
       for(r in 1:length(runs)){
+        print(paste('Running detrend: run', r, 'for', subjs[s]))
+        this.run<-dataMatrixPreproc[which(this.subj$runDesign==runs[r]),]
         
         for(d in 1:length(detrend.degrees)){
-          this.run<-dataMatrixPreproc[which(this.subj$runDesign==runs[r]),]
           this.run.detrend<-degree.detrend(this.run,deg=detrend.degrees[d])
           this.run<-this.run.detrend
         }
@@ -49,22 +63,23 @@ preproc.indiv<-function(x,detrend=T, detrend.degrees=c(1,2),global.signal.regres
       dataMatrixPreproc<-dataMatrixDetrend
     }
     
-    if(global.signal.regression==T){
-      print('Running global signal regression per subject')
-      
-   #   dataMatrixGSR<-global.signal.regression(dataMatrixPreproc)
+    
+    if(svdn==T){
+    print(paste('Running svd norm for', subjs[s]))
+  
+    dataMatrixSVDn<-svd.norm(dataMatrixPreproc)
+    dataMatrixPreproc<-dataMatrixSVDn
       
     }
     
-    if(svd.norm==T){
-      print('Running svd norm per subject')
-      
-      #   dataMatrixSVDn<-svd.norm(dataMatrixPreproc)
+    if(svdlowrank==T){
+      print(paste('Running svd low rank for', subjs[s]))  
+      dataMatrixSVDlow<-svd.low.rank.rebuild(dataMatrixPreproc)
+      dataMatrixPreproc<-dataMatrixSVDlow
       
     }
     
     x[[subjs[s]]]$dataMatrixPreproc<-dataMatrixPreproc
-    x[[subjs[s]]]$dataMatrixPreproc<-dataMatrixPreproc
-  }
+ }
   return(x)
 }
