@@ -116,9 +116,10 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
   d <- res$d
   tau <- d^2/sum(d^2)
   comp.ret <- min(length(d),k)
-
-  p <- res$u <- res$u[,1:comp.ret]
-  q <- res$v <- res$v[,1:comp.ret]
+  
+                      ## this should protect against the rank 1 where it's just a vector.
+  p <- res$u <- as.matrix(res$u[,1:comp.ret])
+  q <- res$v <- as.matrix(res$v[,1:comp.ret])
 
     ## I also need to skip over this computation if LW or RW are either empty or all 1s
   if(LW.is.vector){
