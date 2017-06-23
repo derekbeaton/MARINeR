@@ -7,10 +7,11 @@
 #'  @description \code{preproc.indiv} Preprocessing on the individual subject level; includes linear and quadratric detrend, and ?!?!?
 #'
 #'  @param x a list of subject data derived from \code{\link{subject.data.list}}
-#'  @param detrend Flag (default=T) for linear detrend (for each run separately)
+#'  @param svd.rank.rebuild  (default=0) create low rank approximation of data matrix. Can take: an integer for number of components, a decimal > 0 and < 1 for percent explained variance, or a vector of values to select for specific components.
+#'  @param detrend (default=T) for polynominal detrend (for each run separately)
 #'  @param detrend.degrees (default=c(1,2)) - degrees of polynomial to detrend; for linear detrend c(1); for linear then quadratic c(1,2)
-#'  @param global.signal.regreesion Flag (default=T) for regressing out mean of matrix
-#'  @param svd.norm Flag (default=T) to svd normalize (divide by first singular value of the entire subject)
+#'  @param gsr (default=T) for global signal regression (regress out the mean per row, usually volume)
+#'  @param svd.norm (default=T) to svd normalize (i.e., matrix z-score; divide the subject matrix by its first singular value)
 #'  
 #'  @return x a list of subject data with preprocessed data included per subject under x$subj$dataMatrixPreproc
 
@@ -19,8 +20,7 @@
 #'  @examples
 #'  
 #'  @author Jenny Rieck
-
-preproc.indiv<-function(x,gsr =T, detrend=T, detrend.degrees=c(1,2),svdn=T, svdlowrank=T){
+preproc.indiv<-function(x, gsr =T, detrend=T, detrend.degrees=c(1,2), svd.norm = T, svd.low.rank.approx = T){
   
   subjs<-names(x)
   
