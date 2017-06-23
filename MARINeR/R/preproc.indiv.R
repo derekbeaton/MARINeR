@@ -64,7 +64,7 @@ preproc.indiv<-function(x, gsr =T, detrend=T, detrend.degrees=c(1,2), svd.norm =
     }
     
     
-    if(svdn==T){
+    if(svd.norm==T){
     print(paste('Running svd norm for', subjs[s]))
   
     dataMatrixSVDn<-svd.norm(dataMatrixPreproc)
@@ -72,7 +72,7 @@ preproc.indiv<-function(x, gsr =T, detrend=T, detrend.degrees=c(1,2), svd.norm =
       
     }
     
-    if(svdlowrank==T){
+    if(svd.low.rank.approx==T){
       print(paste('Running svd low rank for', subjs[s]))  
       dataMatrixSVDlow<-svd.low.rank.rebuild(dataMatrixPreproc)
       dataMatrixPreproc<-dataMatrixSVDlow
