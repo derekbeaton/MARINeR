@@ -8,27 +8,30 @@ gc()
 
 #######################################################
 ###### specify directories
-nii.dir<-'./data/ds107/nii/'
-design.dir<-'./data/ds107/design/'
+nii.dir<-'../data/ds107/nii/'
+design.dir<-'../data/ds107/design/'
 
 data.pref<-''
 data.mid<-'_task-onebacktask_'
 data.suff<-'_bold_MNI.nii.gz'
-mask<-'./data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'
+mask<-'../data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'
 
 
 #######################################################
 ###### sourcing necessary scripts
-source('./MARINeR/R/volsToMatrix.R')
-source('./MARINeR/R/subject.data.list.R')
-#source('../MARINeR/R/rowNorms.R')
-#source('../MARINeR/R/expo.scale.R')
-source('./MARINeR/R/gsvd.R')
-source('./MARINeR/R/tolerance.svd.R')
-source('./MARINeR/R/matrixToVolume.R')
-source('./MARINeR/R/preproc.indiv.R')
-source('./TempCode/PreProc_Funcs.R')
-source('./MARINeR/R/drop.TRs.R')
+source('../MARINeR/R/volsToMatrix.R')
+source('../MARINeR/R/subject.data.list.R')
+source('../MARINeR/R/gsvd.R')
+source('../MARINeR/R/tolerance.svd.R')
+source('../MARINeR/R/matrixToVolume.R')
+source('../MARINeR/R/preproc.indiv.R')
+source('../MARINeR/R/drop.TRs.R')
+
+source('../MARINeR/R/gsr.R')
+source('../MARINeR/R/degree.detrend.R')
+source('../MARINeR/R/svd.low.rank.rebuild.R')
+source('../MARINeR/R/svd.norm.R')
+
 
 #source('../NewR/makeNominalData.R')
 library(neuroim)
@@ -65,6 +68,7 @@ data.list.dropped<-drop.TRs(data.list, c('drop'))
 
 ### do preprocessing for each subject individually (i.e., detrend)
 data.list.preproc<-preproc.indiv(data.list.dropped)
+  ## this above function handles everything.
 
 
 ### some stuff below will end up in concatenate.data.R
@@ -73,54 +77,11 @@ data.list.preproc<-preproc.indiv(data.list.dropped)
 
 ## linear detrend, row normalize, then column center.
 concat.data <- cbind(
-  expo.scale(rowNorms(apply(data.list$sub.09$dataMatrixPreproc,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F),
-  expo.scale(rowNorms(apply(data.list$sub.15$dataMatrixPreproc,2,function(x){resid( lm( x~seq(x) ) )}),type="z"),center=T,scale=F)
+  data.list.preproc[[1]],
+  data.list.preproc[[2]]
   )
 participant.design <- c(
-  rep("sub.09",ncol(data.list$sub.09$dataMatrixPreproc)),
-  rep("sub.15",ncol(data.list$sub.15$dataMatrixPreproc))
+  rep("sub.09",ncol(data.list.preproc[[1]]$dataMatrix)),
+  rep("sub.15",ncol(data.list.preproc[[2]]$dataMatrix))
 )
-## drop TRs
-
-#dim(concat.data)
-
-## input data with nuisance volumes already dropped - should happen much much earlier
-concat.data_dropped <- concat.data[-c(which(data.list$sub.09$dataDesign=="drop" | data.list$sub.09$dataDesign=="FIXATION")),]
-
-
-
-## ROW DES
-row.des <- makeNominalData(as.matrix(data.list$sub.09$dataDesign[-c(which(data.list$sub.09$dataDesign=="drop" | data.list$sub.09$dataDesign=="FIXATION")),1]))
-col.des <- makeNominalData(as.matrix(participant.design))
-
-
-
-pca <- gsvd(concat.data_dropped)
-prettyPlot(pca$p,col=createColorVectorsByDesign(row.des)$oc,pch=20)
-prettyPlot(pca$q,col=createColorVectorsByDesign(col.des)$oc,pch=20)
-
-sub.09<-as.matrix(pca$q[which(col.des[,1]==1),1])
-sub.15<-as.matrix(pca$q[which(col.des[,2]==1),1])
-
-
-matrixToVolume(dataMatrix = sub.09, mask= data.list$sub.09$mask ,dataFileName = "sub_09_pca.nii")
-matrixToVolume(dataMatrix = sub.15, mask= data.list$sub.09$mask ,dataFileName = "sub_15_pca.nii")
-
-
-
-#############
-
-
-mcpls <- gsvd(t(row.des) %*% concat.data_dropped)
-prettyPlot(mcpls$p,col=createColorVectorsByDesign(row.des)$gc,pch=20)
-prettyPlot(mcpls$q,col=createColorVectorsByDesign(col.des)$oc,pch=20)
-
-mcsub.09<-as.matrix(mcpls$q[which(col.des[,1]==1),1])
-mcsub.15<-as.matrix(mcpls$q[which(col.des[,2]==1),1])
-
-
-matrixToVolume(dataMatrix = mcsub.09, mask= data.list$sub.09$mask ,dataFileName = "mcsub_09_pca.nii")
-matrixToVolume(dataMatrix = mcsub.15, mask= data.list$sub.09$mask ,dataFileName = "mcsub_15_pca.nii")
-
-
 
