@@ -43,13 +43,16 @@
 #'    )
 #'
 #'  Observed <- authors/sum(authors)
-#'  rowW <- rowSums(Observed)
-#'  colW <- colSums(Observed)
-#'  Expected <- rowW %o% colW
+#'  row.w <- rowSums(Observed)
+#'    row.W <- diag(1/row.w)
+#'  col.w <- colSums(Observed)
+#'    col.W <- diag(1/col.w)
+#'  Expected <- row.w %o% col.w
 #'  Deviations <- Observed - Expected
-#'  ca.res <- gsvd(Deviations,diag(1/rowW),diag(1/colW))
-#'  fi <- diag(1/rowW) %*% ca.res$p %*% diag(ca.res$d)
-#'  fj <- diag(1/colW) %*% ca.res$q %*% diag(ca.res$d)
+#'  ca.res <- gsvd(Deviations,row.W,col.W)
+#'    ## fi & fj in example deprecated because this is now part of the GSVD return.
+#'  #fi <- row.W %*% ca.res$p %*% diag(ca.res$d)
+#'  #fj <- col.W %*% ca.res$q %*% diag(ca.res$d)
 #'
 #'  @author Derek Beaton
 #'  @keywords multivariate, diagonalization, eigen
@@ -59,11 +62,9 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
 
     ## probably need some rudimentary checks here.
     DAT <- as.matrix(DAT)
-    #LW <- as.matrix(LW)
-    #RW <- as.matrix(RW)
 
     RW.is.vector <- LW.is.vector <- RW.is.nan <- LW.is.nan <- F
-
+      ## clean this up to avoid the warnings...
     if( is.nan(LW) ){
       LW.is.nan <- T
     }else{
@@ -91,9 +92,6 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
       }
     }
 
-    ## actually, I need to test if LW or RW are diagonals or vectors.
-      ## then I need to compute whatever I need to compute.
-
 
     if( LW.is.vector ){
       DAT <- matrix(sqrt(LW),nrow=nrow(DAT),ncol=ncol(DAT),byrow=F) * DAT
@@ -106,7 +104,7 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
       DAT <- DAT %*% power.rebuild_matrix(RW, power = 1/2)
     }
 
-    ## I also need to skip over this computation if LW or RW are either empty or all 1s
+  ## I also need to skip over this computation if LW or RW are either empty or all 1s
   #dat.for.svd <- power.rebuild_matrix(LW, power = 1/2) %*% DAT %*% power.rebuild_matrix(RW, power = 1/2)
 
   if(k<=0){
@@ -116,25 +114,38 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
   d <- res$d
   tau <- d^2/sum(d^2)
   comp.ret <- min(length(d),k)
-  
-                      ## this should protect against the rank 1 where it's just a vector.
-  p <- res$u <- as.matrix(res$u[,1:comp.ret])
-  q <- res$v <- as.matrix(res$v[,1:comp.ret])
+          ## this should protect against the rank 1 where it's just a vector.
+  res$u <- as.matrix(res$u[,1:comp.ret])
+  res$v <- as.matrix(res$v[,1:comp.ret])
 
     ## I also need to skip over this computation if LW or RW are either empty or all 1s
   if(LW.is.vector){
     p <- matrix(1/sqrt(LW),nrow=nrow(res$u),ncol=ncol(res$u),byrow=F) * res$u
+    fi <- matrix(LW,nrow=nrow(p),ncol=ncol(p),byrow=F) * p * matrix(d,nrow(p),ncol(p),byrow=T)
   }else if(!LW.is.nan){
     p <- power.rebuild_matrix(LW, power = -1/2) %*% res$u
+    fi <- LW %*% p * matrix(d,nrow(p),ncol(p),byrow=T)
+  }else{
+    p <- res$u
+    fi <- p * matrix(d,nrow(p),ncol(p),byrow=T)
   }
+
   if(RW.is.vector){
     q <- matrix(1/sqrt(RW),nrow=nrow(res$v),ncol=ncol(res$v),byrow=F) * res$v
+    fj <- matrix(RW,nrow=nrow(q),ncol=ncol(q),byrow=F) * q * matrix(d,nrow(q),ncol(q),byrow=T)
   }else if(!RW.is.nan){
     q <- power.rebuild_matrix(RW, power = -1/2) %*% res$v
+    fj <- RW %*% q * matrix(d,nrow(q),ncol(q),byrow=T)
+  }else{
+    q <- res$v
+    fj <- q * matrix(d,nrow(q),ncol(q),byrow=T)
   }
 
   rownames(res$u) <- rownames(p) <- rownames(DAT)
   rownames(res$v) <- rownames(q) <- colnames(DAT)
 
-  return(list(p = p, q = q, u = res$u, v = res$v, d = d[1:comp.ret], d.orig = d, tau = tau))
+  ## factor scores should come right out of this...
+
+    ### the output here should perhaps be minimized...
+  return(list(fi = fi, fj = fj, p = p, q = q, u = res$u, v = res$v, d = d[1:comp.ret], d.orig = d, tau = tau))
 }
