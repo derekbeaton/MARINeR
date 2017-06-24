@@ -28,9 +28,9 @@ concatenate.data <- function(masked.subject.data, concat.method='tr-task-by-voxe
   data.vec <- list()
   ## need to do some quick checks here on sizes of each data matrix.
   for (subj in seq(1,length(masked.subject.data))){
-    have.same.number.vols(masked.subject.data[[subj]]$dataMatrixPreproc, masked.subject.data[[subj]]$dataDesign[[1]])
+    have.same.number.vols(masked.subject.data[[subj]]$dataMatrix, masked.subject.data[[subj]]$dataDesign[[1]])
     if (concat.method == 'tr-task-by-voxel'){
-      data.vec[[subj]] <- vectorize.by.vol.task(masked.subject.data[[subj]]$dataMatrixPreproc, masked.subject.data[[subj]]$dataDesign[[1]])
+      data.vec[[subj]] <- vectorize.by.vol.task(masked.subject.data[[subj]]$dataMatrix, masked.subject.data[[subj]]$dataDesign[[1]])
       #ncol.subj <- dim(data.vec[[subj]])[2]
     }
   }
