@@ -1,4 +1,5 @@
 require(assertthat)
+require(data.table)
 
 have.same.number.vols <- function(subject.data, design){
   assert_that(not_empty(subject.data), not_empty(design))
@@ -17,35 +18,24 @@ vectorize.data <- function(data){
   return(data)
 }
 
-vectorize.by.task <- function(subject.data, design){
+vectorize.by.vol.task <- function(subject.data, design){
   rownames(subject.data) <- make.names(design, unique = TRUE)
-  return(subject.data)
+  return(as.data.frame(subject.data))
 }
 
-# create a single row for each task -- problem with different number of volumes per task
-vectorize.by.task_old <- function(subject.data, design){
+
+concatenate.data <- function(masked.subject.data, concat.method='tr-task-by-voxel'){
   data.vec <- list()
-  count <- 0
-  for (level in levels(design)){
-    print(level)
-    count <- count + 1
-    data.vec[[count]] <- vectorize.data(subject.data[design == level,])
-    print(data.vec[[count]])
-  }
-  data.vec <- data.frame(matrix(unlist(data.vec), nrow=length(levels(design)), byrow=T))
-  rownames(data.vec) <- levels(design)
-  return(data.vec)
-}
-
-concatenate.data <- function(masked.subject.data, concat.method = 'task'){
-
   ## need to do some quick checks here on sizes of each data matrix.
-  for (i in length(data.list)){
-    have.same.number.vols(data.list[[i]]$dataMatrixPreproc, data.list[[i]]$dataDesign[[1]])
-    if (concat.method == 'task'){
-      toto <- vectorize.by.task(data.list[[i]]$dataMatrixPreproc, data.list[[i]]$dataDesign[[1]])
+  for (subj in seq(1,length(masked.subject.data))){
+    have.same.number.vols(masked.subject.data[[subj]]$dataMatrixPreproc, masked.subject.data[[subj]]$dataDesign[[1]])
+    if (concat.method == 'tr-task-by-voxel'){
+      data.vec[[subj]] <- vectorize.by.vol.task(masked.subject.data[[subj]]$dataMatrixPreproc, masked.subject.data[[subj]]$dataDesign[[1]])
+      #ncol.subj <- dim(data.vec[[subj]])[2]
     }
   }
-
+  data.mat <- do.call('cbind', data.vec)
+  return(data.mat)
 }
 
+#datamatrix <- concatenate.data(data.list, concat.method = 'tr-task-by-voxel')
