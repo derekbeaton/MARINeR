@@ -28,6 +28,8 @@ source('./MARINeR/R/tolerance.svd.R')
 source('./MARINeR/R/matrixToVolume.R')
 source('./MARINeR/R/preproc.indiv.R')
 source('./TempCode/PreProc_Funcs.R')
+source('./MARINeR/R/drop.TRs.R')
+
 #source('../NewR/makeNominalData.R')
 library(neuroim)
 library(ExPosition)
@@ -58,8 +60,11 @@ names(subj.list) <- c("sub.09","sub.15")
 ### create data list structure for each participant
 data.list <- subject.data.list(subj.list)
 
+## Drop TRs of non interest
+data.list.dropped<-drop.TRs(data.list, c('drop'))
+
 ### do preprocessing for each subject individually (i.e., detrend)
-data.list<-preproc.indiv(data.list)
+data.list.preproc<-preproc.indiv(data.list.dropped)
 
 
 ### some stuff below will end up in concatenate.data.R

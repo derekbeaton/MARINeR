@@ -15,26 +15,26 @@
 #'  
 #'  @example 
 #'  
-#'  S01 <- list(
-#'  data=c('../Data/S01/filtered_func_data_fMRI1.nii',
-#'         '../Data/S01/filtered_func_data_fMRI2.nii'),
-#'  masks=c('../Masks/S01/L_amygdala2example_func.nii',
-#'          '../Masks/S01/R_amygdala2example_func.nii'),
-#'  design=c('../Design/S01/run1_design.csv',
-#'           '../Design/S01/run2_design.csv')
+#'  sub.09 <- list(
+#'  data=c('./data/ds107/nii/sub-09_task-onebacktask_run-01_bold_MNI.nii.gz',
+#'         './data/ds107/nii/sub-09_task-onebacktask_run-02_bold_MNI.nii.gz'),
+#'  masks=c('./data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii',
+#'          './data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'),
+#'  design=c('./data/d107/design/ds107_run-01_165TR_DESIGN.csv',
+#'           './data/d107/design/ds107_run-02_166TR_DESIGN.csv')
 #'  )
 #'  
-#'  S02 <- list(
-#'  data=c('../Data/S02/filtered_func_data_fMRI1.nii',
-#'         '../Data/S02/filtered_func_data_fMRI2.nii'),
-#'  masks=c('../Masks/S02/L_amygdala2example_func.nii',
-#'          '../Masks/S02/R_amygdala2example_func.nii'),
-#'  design=c('../Design/S02/run1_design.csv',
-#'           '../Design/S02/run2_design.csv')
+#'  sub.15 <- list(
+#'  data=c('./data/ds107/nii/sub-15_task-onebacktask_run-01_bold_MNI.nii.gz',
+#'         './data/ds107/nii/sub-15_task-onebacktask_run-02_bold_MNI.nii.gz'),
+#'  masks=c('./data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii',
+#'          './data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'),
+#'  design=c('./data/d107/design/ds107_run-01_165TR_DESIGN.csv',
+#'           './data/d107/design/ds107_run-02_166TR_DESIGN.csv')
 #'  )
 #'  
-#'  subj.list <- list(S01,S02)
-#'  names(subj.list) <- c("S01","S02")
+#'  subj.list <- list(sub.09,sub.15)
+#'  names(subj.list) <- c("sub.09","sub.15")
 #'  data.list <- subject.data.list(subj.list)
 
 
