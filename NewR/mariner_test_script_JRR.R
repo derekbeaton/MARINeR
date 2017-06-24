@@ -76,4 +76,10 @@ concat.data <- concatenate.data(data.list.preproc)
 
 ## PCA!
 gres <- gsvd(concat.data)
+  #gres1 <- gsvd((concat.data[,1:6233]+concat.data[,6234:ncol(concat.data)])/2)
+prettyScree(gres$d^2)
 prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc)
+prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc,x_axis=2,y_axis=3)
+
+
+
