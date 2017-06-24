@@ -76,3 +76,4 @@ concat.data <- concatenate.data(data.list.preproc)
 
 ## PCA!
 gres <- gsvd(concat.data)
+prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc)
