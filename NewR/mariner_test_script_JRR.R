@@ -32,6 +32,7 @@ source('../MARINeR/R/degree.detrend.R')
 source('../MARINeR/R/svd.low.rank.rebuild.R')
 source('../MARINeR/R/svd.norm.R')
 
+source('../MARINeR/R/concatenate.data.R')
 
 #source('../NewR/makeNominalData.R')
 library(neuroim)
@@ -70,18 +71,8 @@ data.list.dropped<-drop.TRs(data.list, c('drop'))
 data.list.preproc<-preproc.indiv(data.list.dropped)
   ## this above function handles everything.
 
+## concatenate.
+concat.data <- concatenate.data(data.list.preproc)
 
-### some stuff below will end up in concatenate.data.R
-### and then a preproc function
-## and then all embedded in a PCA function
-
-## linear detrend, row normalize, then column center.
-concat.data <- cbind(
-  data.list.preproc[[1]],
-  data.list.preproc[[2]]
-  )
-participant.design <- c(
-  rep("sub.09",ncol(data.list.preproc[[1]]$dataMatrix)),
-  rep("sub.15",ncol(data.list.preproc[[2]]$dataMatrix))
-)
-
+## PCA!
+gres <- gsvd(concat.data)
