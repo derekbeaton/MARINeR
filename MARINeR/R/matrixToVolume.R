@@ -24,4 +24,5 @@ matrixToVolume<-function(dataMatrix,mask,dataFileName='myBrain.nii'){
   bspace<-space(mask)
   vol.out<-SparseBrainVector(dataMatrix,space=bspace,mask=mask)
   writeVector(vol.out,dataFileName)
+  #return(vol.out)
 }

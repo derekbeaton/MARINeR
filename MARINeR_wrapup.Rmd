@@ -1,0 +1,153 @@
+---
+title: "MARINeR Wrap-up"
+author: "Jenny Rieck, Lynne Williams, Derek Beaton"
+date: "June 24, 2017"
+#output: ioslides_presentation
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#setwd('C:/Users/Jenny/Documents/projects/mariner/BrainHack_TO_2017/')
+library(neuroim)
+library(ExPosition)
+library(prettyGraphs)
+
+#library(R.utils)
+
+source('./MARINeR/R/degree.detrend.R')
+source('./MARINeR/R/drop.TRs.R')
+source('./MARINeR/R/gsr.R')
+source('./MARINeR/R/gsvd.R')
+source('./MARINeR/R/invert.rebuild_matrix.R')
+source('./MARINeR/R/isDiagonal.matrix.R')
+source('./MARINeR/R/matrixToVolume.R')
+source('./MARINeR/R/power.rebuild_matrix.R')
+source('./MARINeR/R/volsToMatrix.R')
+source('./MARINeR/R/tolerance.svd.R')
+source('./MARINeR/R/svd.low.rank.rebuild.R')
+source('./MARINeR/R/svd.norm.R')
+source('./MARINeR/R/concatenate.data.R')
+source('./MARINeR/R/subject.data.list.R')
+source('./MARINeR/R/preproc.indiv.R')
+
+nii.dir<-'./data/ds107/nii/'
+design.dir<-'./data/ds107/design/'
+
+```
+
+## MARINeR: Multivariate analyses with resampling inference for neuroimaging data (in R)
+
+MARINeR is an R-package designed for multivariate analyses with resampling inference testing for neuroimaging data (fMRI; fMRI + behavior; fMRI + structure). All multivariate techniques are based on the singular value decomposition, including PCA, MDS, PLS, and MFA. Resampling strategies will include permutation, bootstrap, and split-half resampling.
+
+Our current repository lives @ https://github.com/derekbeaton/BrainHack_TO_2017
+
+This markdown file will walk you through a basic PCA on example fMRI data
+
+## 1. Data read in to subject list
+
+First specify file names and locations for each participant. Mutliple runs of data can be included. If multiple masks are entered they will be additively combined. Design files should correspond to task conditions for each TR for each run. 
+
+```{r specify_subject_files}
+sub.09 <- list(
+  data = c(paste0(nii.dir,'sub-09/func/sub-09_task-onebacktask_run-01_bold_MNI.nii.gz'),  #run 1 4D time series data
+           paste0(nii.dir,'sub-09/func/sub-09_task-onebacktask_run-02_bold_MNI.nii.gz')), #run 2 4D time series data
+  masks = c('./data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'),
+  design = c(paste0(design.dir,'ds107_run-01_165TR_DESIGN.csv'), #run 1 design conditions per TR
+             paste0(design.dir,'ds107_run-02_166TR_DESIGN.csv')) #run 2 design conditions per TR
+)
+
+sub.15 <- list(
+  data = c(paste0(nii.dir,'sub-15/func/sub-15_task-onebacktask_run-01_bold_MNI.nii.gz'),
+           paste0(nii.dir,'sub-15/func/sub-15_task-onebacktask_run-02_bold_MNI.nii.gz')),
+  masks = c('./data/ds107/std_masks/aalnumb_4mm_occ_mtl.nii'),
+  design = c(paste0(design.dir,'ds107_run-01_165TR_DESIGN.csv'),
+             paste0(design.dir,'ds107_run-02_166TR_DESIGN.csv'))
+)
+
+subj.list <- list(sub.09,sub.15)
+names(subj.list) <- c("sub.09","sub.15")
+data.list <- subject.data.list(subj.list)
+
+dim(data.list$sub.09$dataMatrix)
+head(data.list$sub.09$dataDesign)
+#head(data.list$sub.09$runDesign)
+
+```
+
+## 2. Drop TRs or conditions of non interest (based on design or index)
+
+```{r drop_condition}
+# Drop TRs by design file condition
+data.list.dropped<-drop.TRs(data.list, c('drop'))
+```
+
+```{r drop_index, eval=F}
+# Drop TRs by index (first and last 5 TRs of each run)
+run01.drop<-c(head(which(data.list$sub.09$runDesign==1),5), tail(which(data.list$sub.09$runDesign==1),5))
+run02.drop<-c(head(which(data.list$sub.09$runDesign==2),5), tail(which(data.list$sub.09$runDesign==2),5))
+data.list.dropped<-drop.TRs(data.list,c(run01.drop,run02.drop)) 
+
+```
+
+## 3. Individual level preprocessing
+Apply the same preprocessing pipeline for each participant in your data list. indiivdual level preprocessing options include:
+
+* **centering and scaling of rows and csolumns**
+* **svd.rank.rebuild** (default=F) a boolean. Do you want to use a lower rank approximation of your data?
+* **rank.rebuild**   (default=NA) create low rank approximation of data matrix. Can take: an integer for number of components, a decimal > 0 and < 1 for percent explained variance, or a vector of values to select for specific components. The default is NA and will return a low rank approximation of 90% variance or 10 components (which ever is the fewer # of components).
+* **gsr** (default=T) for global signal regression (regress out the mean per row, usually volume)
+* **gsr.vals** (default = "mean"). Values to use for the global signal regression; default is mean per volume (row). "median" is also available or you can pre-specifify values. ## NOTE FOR OURSELVES: if gsr.vals comes in, it will have to be a list of length x, wherein each item is of nrow per subj.
+* **detrend.per.run** (default=T) for polynominal detrend (for each run separately)
+* **detrend.degrees** (default=1) - degrees of polynomial to detrend; 1 for linear, 2 for linear & quadratic, and so on... (uses R's poly()).
+* **svd.norm** (default=T) to svd normalize (i.e., matrix z-score; divide the subject matrix by its first singular value)
+
+```{r preproc}
+data.list.preproc<-preproc.indiv(data.list.dropped)
+```
+
+## 4. Concatenate individual data matrices to appropriate format for analysis
+
+Right now each data will be concatenated so that each participant are stacked along the columns (with each row representing a TR or condition).  But other concatenation options will be available soon.
+```{r concat}
+concat.data<-concatenate.data(data.list.preproc, concat.method = 'tr-task-by-voxel')
+
+```
+
+
+## 5. Conduct PCA analysis via the gSVD
+```{r pca}
+gres <- gsvd(concat.data)
+```
+
+## 6. Plotting of compenents
+
+```{r scree, echo=FALSE,results="hide"}
+## Scree Plot
+prettyScree(gres$d^2)
+```
+
+```{r lv12, echo=FALSE,results="hide"}
+## Components 1 vs 2
+prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc,xlab = "LV 1", ylab="LV 2")
+```
+
+```{r lv23, echo=FALSE,results="hide"}
+## Components 2 vs 3
+prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc,x_axis=2,y_axis=3, xlab="LV 2", ylab="LV 3")
+```
+
+## 7. Write out PCA results back to a .nii.gz
+```{r make_brain}
+lv.to.brain<-1 
+sub.09.fj<-as.matrix(gres$fj[1:6233,lv.to.brain])
+sub.09.cj<-sub.09.fj^2/sum(sub.09.fj^2)
+
+threshold.cj<- 1/6233
+
+#sub.09.fj.sig<-sub.09.fj[sub.09.cj>threshold.cj]
+sub.09.fj[sub.09.cj<=threshold.cj] = 0
+
+sub.09.nii<-matrixToVolume(dataMatrix = sub.09.fj, mask= data.list$sub.09$mask ,dataFileName = "sub_09_pca_lv1_top_cj.nii")
+```
