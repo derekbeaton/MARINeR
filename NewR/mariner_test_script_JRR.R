@@ -82,4 +82,3 @@ prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.prep
 prettyPlot(gres$fi,col=createColorVectorsByDesign(makeNominalData(data.list.preproc$sub.15$dataDesign))$oc,x_axis=2,y_axis=3)
 
 
-
