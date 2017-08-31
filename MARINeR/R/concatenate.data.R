@@ -1,5 +1,6 @@
 require(assertthat)
 require(data.table)
+require(abind)
 
 have.same.number.vols <- function(subject.data, design){
   assert_that(not_empty(subject.data), not_empty(design))
@@ -24,17 +25,35 @@ vectorize.by.vol.task <- function(subject.data, design){
 }
 
 
-concatenate.data <- function(masked.subject.data, concat.method='tr-task-by-voxel'){
-  data.vec <- list()
+concatenate.data <- function(masked.subject.data, concat.method='by_vols'){
+  data.vec <- vector(list,length(masked.subject.data))
   ## need to do some quick checks here on sizes of each data matrix.
   for (subj in seq(1,length(masked.subject.data))){
-    have.same.number.vols(masked.subject.data[[subj]]$dataMatrix, masked.subject.data[[subj]]$dataDesign[[1]])
-    if (concat.method == 'tr-task-by-voxel'){
+
+    #if (concat.method == 'by_voxels'){   ## concatenate col-wise where voxels are repeated but vols are common
+      have.same.number.vols(masked.subject.data[[subj]]$dataMatrix, masked.subject.data[[subj]]$dataDesign[[1]])
       data.vec[[subj]] <- vectorize.by.vol.task(masked.subject.data[[subj]]$dataMatrix, masked.subject.data[[subj]]$dataDesign[[1]])
-      #ncol.subj <- dim(data.vec[[subj]])[2]
-    }
+    #}
+    #if (concat.method == 'by_vols'){  ## concatenate row-wise where vols are repeated but voxels are common
+
+    #}
+    #if (concat.method == 'depth'){   ## concatenate depth-wise where voxels and vols are repeated in a tensor/array
+    #}
   }
-  data.mat <- do.call('cbind', data.vec)
+
+  if(concat.method == 'by_voxels'){
+    data.mat <- do.call('cbind', data.vec)
+      ## need to guarantee an order before this
+  }
+  if(concat.method == 'by_vols'){
+    data.mat <- do.call('rbind', data.vec)
+    ## need to guarantee an order before this
+  }
+  if(concat.method == 'depth'){
+    data.mat <- do.call('abind', c(data.vec,along=3))
+    ## need to guarantee an order before this
+  }
+
   return(data.mat)
 }
 
