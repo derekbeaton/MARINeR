@@ -1,3 +1,6 @@
+#### I DON'T THINK I WANT THIS FUNCTION HERE ANYMORE.
+
+
 ##requires expo.scale
 
 scale.control.impute <- function(data.in,center=T,scale=T,control.for=T,impute=T,regressors=NULL){

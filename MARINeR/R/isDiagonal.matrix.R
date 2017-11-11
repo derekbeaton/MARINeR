@@ -12,9 +12,10 @@
 
 
   ## I stole this from somewhere... but I don't remember where
-isDiagonal.matrix <- function(X){
+isDiagonal.matrix <- function(X,tol=.Machine$double.eps*2){
   if(is.null(dim(X))){
     stop("isDiagonal.matrix: X is not a matrix.")
   }
+  X[ X^2 < tol ] <- 0
   return(all(X[lower.tri(X)] == 0, X[upper.tri(X)] == 0))
 }

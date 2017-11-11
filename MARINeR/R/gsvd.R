@@ -21,10 +21,10 @@
 #'
 #'  @return
 #'  A list with seven elements:
-#'  \item{p} a vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
-#'  \item{q} a vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
-#'  \item{u} a matrix whose columns contain the left singular vectors of x, present if nu > 0. Dimension c(n, nu) but also accounting for \code{tol}.
-#'  \item{v} a matrix whose columns contain the left singular vectors of x, present if nv > 0. Dimension c(p, nv) but also accounting for \code{tol}.
+#'  \item{u} Left singular vectors. A matrix whose columns contain the left singular vectors of x, present if nu > 0. Dimension c(n, nu) but also accounting for \code{tol}.
+#'  \item{v} Right singular vectors. A matrix whose columns contain the left singular vectors of x, present if nv > 0. Dimension c(p, nv) but also accounting for \code{tol}.
+#'  \item{p} Left generalized singular vectors. A vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
+#'  \item{q} Right generalized singular vectors. A vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
 #'  \item{d} a vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
 #'  \item{d.orig} a vector containing the singular values of x of length min(n, p) but also accounting for \code{tol}.
 #'  \item{tau} a vector that contains the (original) explained variance per component.
@@ -62,6 +62,8 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
 
     ## probably need some rudimentary checks here.
     DAT <- as.matrix(DAT)
+
+    ## I should check if LW and RW are rectangular. If they are, I should exit with an error.
 
     RW.is.vector <- LW.is.vector <- RW.is.nan <- LW.is.nan <- F
       ## clean this up to avoid the warnings...
@@ -111,12 +113,16 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
     k <- min(nrow(DAT),ncol(DAT))
   }
   res <- tolerance.svd(DAT,nu=nu,nv=nv,tol=tol)
-  d <- res$d
-  tau <- d^2/sum(d^2)
-  comp.ret <- min(length(d),k)
+
+  d.orig <- res$d
+  tau <- d.orig^2/sum(d.orig^2)
+  comp.ret <- min(length(d.orig),k)
+
+  d <- d.orig[1:comp.ret]
           ## this should protect against the rank 1 where it's just a vector.
   res$u <- as.matrix(res$u[,1:comp.ret])
   res$v <- as.matrix(res$v[,1:comp.ret])
+
 
     ## I also need to skip over this computation if LW or RW are either empty or all 1s
   if(LW.is.vector){
@@ -144,8 +150,5 @@ gsvd <- function(DAT, LW=NaN, RW=NaN, nu= min(dim(DAT)), nv = min(dim(DAT)), k =
   rownames(res$u) <- rownames(p) <- rownames(DAT)
   rownames(res$v) <- rownames(q) <- colnames(DAT)
 
-  ## factor scores should come right out of this...
-
-    ### the output here should perhaps be minimized...
-  return(list(fi = fi, fj = fj, p = p, q = q, u = res$u, v = res$v, d = d[1:comp.ret], d.orig = d, tau = tau))
+  return(list(fi = fi, fj = fj, p = p, q = q, u = res$u, v = res$v, d = d, d.orig = d.orig, tau = tau))
 }
