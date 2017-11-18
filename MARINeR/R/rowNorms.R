@@ -9,7 +9,8 @@ rowNorms <- function(X,type=NULL,center=FALSE,scale=FALSE){
 	  return(t(apply(X,1,scale,T,T)))
 	}else if(type == 'other'){
 			## this one is expensive.
-		return(t(expo.scale(t(X),center=center,scale=scale)))
+		#return(t(expo.scale(t(X),center=center,scale=scale)))
+		return(t(apply(X,1,scale,center,scale)))
 	}else{
 		return(X)
 	}

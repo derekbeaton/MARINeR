@@ -26,7 +26,7 @@
 #'  @examples
 #'
 #'  @author Jenny Rieck
-preproc.indiv<-function(x, col.center = T, col.scale = F, row.center = F, row.scale = F, svd.rank.rebuild = T, rank.rebuild = NA, gsr =T, gsr.vals="mean", detrend.per.run=T, detrend.degrees=1, svd.norm = T){
+preproc.indiv<-function(x, col.center = T, col.scale = F, row.center = F, row.scale = F, svd.rank.rebuild = F, rank.rebuild = NA, gsr =T, gsr.vals="mean", detrend.per.run=T, detrend.degrees=1, svd.norm = T){
 
   ## may not be necessary.
   subjs<-names(x)
@@ -37,6 +37,8 @@ preproc.indiv<-function(x, col.center = T, col.scale = F, row.center = F, row.sc
     #dataMatrixPreproc<-this.subj$dataMatrix
     x[[subjs[s]]]$dataMatrix <- expo.scale(x[[subjs[s]]]$dataMatrix,center=col.center,scale=col.scale)
     ## no row norms for now...
+    
+    x[[subjs[s]]]$dataMatrix <- rowNorms(x[[subjs[s]]]$dataMatrix,center=row.center,scale=row.scale)
     
     ### run based preprocessing
     runs<-unique(x[[subjs[s]]]$runDesign)
@@ -55,6 +57,8 @@ preproc.indiv<-function(x, col.center = T, col.scale = F, row.center = F, row.sc
         print(paste('Running detrend: run', r, 'for', subjs[s]))
         x[[subjs[s]]]$dataMatrix[which(x[[subjs[s]]]$runDesign==runs[r]),] <- degree.detrend(x[[subjs[s]]]$dataMatrix[which(x[[subjs[s]]]$runDesign==runs[r]),],deg=detrend.degrees)
       }
+    }else{
+    	x[[subjs[s]]]$dataMatrix <- degree.detrend(x[[subjs[s]]]$dataMatrix,deg=detrend.degrees)
     }
 
     if(svd.norm==T){

@@ -16,7 +16,7 @@ gsr <- function(x, gsr.vals = NA){
     }
   }
   
-  gsr.mat <- resid( lm(x~preds, na.action = na.exclude) )
+  gsr.mat <- resid( lm(x~preds) )
   rownames(gsr.mat) <- rownames(x)
   colnames(gsr.mat) <- colnames(x)
   return(gsr.mat)
