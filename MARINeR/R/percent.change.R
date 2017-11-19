@@ -3,7 +3,6 @@
 	
 percent.change <- function(data,onsets){
 
-
 	baselines <- unlist((onsets[which(onsets[,1]=="ONSET"),3:ncol(onsets)]+1))
 	rep.baselines <- unlist(onsets[which(onsets[,1]=="BLOCK_LENGTH"),3:ncol(onsets)])
 	endpoints <- (baselines-1) + rep.baselines
