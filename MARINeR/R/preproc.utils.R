@@ -114,3 +114,27 @@ expo.scale <- function(DATA,center=TRUE,scale=TRUE){
   attributes(scale.info)$`scaled:scale` <- scale.out
   return(scale.info)
 }
+
+
+#
+# GSR function removed for now. I don't really know why we had this. It's not particularly useful yet.
+#
+# gsr <- function(x, gsr.vals = NA){
+#
+#   if( length(gsr.vals) == nrow(x)){
+#     preds <- gsr.vals
+#   }else if( length(gsr.vals) == 1 ){
+#     if( is.na(gsr.vals) ){
+#       preds <- apply(x,1,mean)
+#     }else if(gsr.vals=="median"){
+#       preds <- apply(x,1,median)
+#     }else{ ## I don't know what you want from me!
+#       preds <- apply(x,1,mean)
+#     }
+#   }
+#
+#   gsr.mat <- resid( lm(x~preds) )
+#   rownames(gsr.mat) <- rownames(x)
+#   colnames(gsr.mat) <- colnames(x)
+#   return(gsr.mat)
+# }
